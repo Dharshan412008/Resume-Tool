@@ -1,29 +1,60 @@
+import pdf from "pdf-parse";
+
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
 
-    const resume = formData.get("resume")?.toString() || "";
-    const jobDesc = formData.get("jobDesc")?.toString() || "";
+    const file = formData.get("resumeFile") as File | null;
+    const jobDesc = (formData.get("jobDesc") as string) || "";
 
-    const resumeText = resume.toLowerCase();
+    if (!file) {
+      return Response.json({ error: "No file uploaded" }, { status: 400 });
+    }
+
+    // Convert uploaded file to buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Extract text from PDF
+    const pdfData = await pdf(buffer);
+
+    const resumeText = pdfData.text.toLowerCase();
     const jobText = jobDesc.toLowerCase();
 
     const commonSkills = [
-      "java","spring","spring boot","mysql","react","node",
-      "aws","docker","kubernetes","javascript","typescript",
-      "python","html","css","mongodb","rest","api","git","linux"
+      "java",
+      "spring",
+      "spring boot",
+      "mysql",
+      "react",
+      "node",
+      "aws",
+      "docker",
+      "kubernetes",
+      "javascript",
+      "typescript",
+      "python",
+      "html",
+      "css",
+      "mongodb",
+      "rest",
+      "api",
+      "git",
+      "linux",
     ];
 
     const words = jobText.split(/[\s,.;()]+/);
-
     const extractedSkills: string[] = [];
 
     words.forEach((word) => {
       const cleaned = word.toLowerCase();
 
-      if (commonSkills.includes(cleaned) && !extractedSkills.includes(cleaned)) {
+      if (
+        commonSkills.includes(cleaned) &&
+        !extractedSkills.includes(cleaned)
+      ) {
         extractedSkills.push(cleaned);
       }
     });
@@ -49,10 +80,11 @@ export async function POST(req: Request) {
       matchedSkills,
       missingSkills,
     });
-
   } catch (error) {
+    console.error(error);
+
     return Response.json(
-      { error: "Server error" },
+      { error: "Server error while analyzing resume" },
       { status: 500 }
     );
   }
