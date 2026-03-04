@@ -3,21 +3,20 @@ import { useState } from "react";
 
 export default function Home() {
 
-  const [resume, setResume] = useState("");
   const [jobDesc, setJobDesc] = useState("");
   const [result, setResult] = useState<any>(null);
   const [file, setFile] = useState<File | null>(null);
 
   const handleAnalyze = async () => {
-    const formData = new FormData();
 
-    formData.append("jobDesc", jobDesc);
-
-    if (file) {
-      formData.append("resumeFile", file);
-    } else {
-      formData.append("resume", resume);
+    if (!file) {
+      alert("Please upload a resume PDF");
+      return;
     }
+
+    const formData = new FormData();
+    formData.append("resumeFile", file);
+    formData.append("jobDesc", jobDesc);
 
     const response = await fetch("/api/analyze", {
       method: "POST",
@@ -48,20 +47,6 @@ export default function Home() {
             accept=".pdf"
             onChange={(e) => setFile(e.target.files?.[0] || null)}
             className="w-full border p-2 rounded text-gray-900"
-          />
-        </div>
-
-        {/* Resume Text */}
-        <div className="mb-6">
-          <label className="block font-semibold mb-2 text-gray-800">
-            Paste Your Resume
-          </label>
-
-          <textarea
-            className="w-full border rounded-lg p-3 h-40 text-gray-900"
-            placeholder="Paste your resume here..."
-            value={resume}
-            onChange={(e) => setResume(e.target.value)}
           />
         </div>
 
@@ -136,19 +121,6 @@ export default function Home() {
                 ))}
               </div>
             </div>
-
-            {/* Suggestions */}
-            {result?.suggestions && (
-              <div className="mt-6">
-                <p className="font-semibold mb-2">Suggestions</p>
-
-                <ul className="list-disc pl-5 space-y-1">
-                  {result.suggestions.map((tip: string, index: number) => (
-                    <li key={index}>{tip}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
 
           </div>
         )}
