@@ -1,6 +1,8 @@
 export async function POST(req: Request) {
-  const body = await req.json();
-  const { resume, jobDesc } = body;
+  const formData = await req.formData();
+
+  const resume = formData.get("resume")?.toString() || "";
+  const jobDesc = formData.get("jobDesc")?.toString() || "";
 
   const resumeText = resume.toLowerCase();
   const jobText = jobDesc.toLowerCase();
@@ -30,7 +32,7 @@ export async function POST(req: Request) {
   const words = jobText.split(/[\s,.;()]+/);
   const extractedSkills: string[] = [];
 
-  words.forEach((word: string) => {
+  words.forEach((word) => {
     const cleaned = word.toLowerCase();
 
     if (commonSkills.includes(cleaned) && !extractedSkills.includes(cleaned)) {
