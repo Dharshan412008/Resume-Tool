@@ -13,7 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://resume-tool.vercel.app"),
+
   title: "TailorCV – AI Resume ATS Optimizer",
+
   description:
     "TailorCV helps job seekers optimize their resumes for ATS systems. Get instant ATS score, detect missing skills, and improve your resume for better job opportunities.",
 
@@ -26,7 +29,7 @@ export const metadata: Metadata = {
   ],
 
   openGraph: {
-    title: "TailorCV – Resume ATS Optimizer",
+    title: "TailorCV – AI Resume ATS Optimizer",
     description:
       "Analyze your resume against job descriptions and improve your ATS score instantly.",
     url: "https://resume-tool.vercel.app",
@@ -42,9 +45,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
