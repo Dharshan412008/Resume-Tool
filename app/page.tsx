@@ -9,12 +9,19 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
 
   const handleAnalyze = async () => {
+    const formData = new FormData();
+
+    formData.append("jobDesc", jobDesc);
+
+    if (file) {
+      formData.append("resumeFile", file);
+    } else {
+      formData.append("resume", resume);
+    }
+
     const response = await fetch("/api/analyze", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ resume, jobDesc }),
+      body: formData,
     });
 
     const data = await response.json();
@@ -22,34 +29,36 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100 p-10">
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-2xl p-8">
+    <main className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-10">
+      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-8">
 
-        <h1 className="text-3xl font-bold mb-6 text-center">
+        {/* Title */}
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">
           TailorCV – Resume Optimizer
         </h1>
 
+        {/* Upload Resume */}
         <div className="mb-4">
-  <label className="block font-semibold mb-2">
-    Upload Resume (PDF)
-  </label>
+          <label className="block font-semibold mb-2 text-gray-800">
+            Upload Resume (PDF)
+          </label>
 
-  <input
-    type="file"
-    accept=".pdf"
-    onChange={(e) => setFile(e.target.files?.[0] || null)}
-    className="w-full border p-2 rounded"
-  />
-</div>
+          <input
+            type="file"
+            accept=".pdf"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="w-full border p-2 rounded text-gray-900"
+          />
+        </div>
 
-        {/* Resume */}
+        {/* Resume Text */}
         <div className="mb-6">
-          <label className="block font-semibold mb-2">
+          <label className="block font-semibold mb-2 text-gray-800">
             Paste Your Resume
           </label>
 
           <textarea
-            className="w-full border rounded-lg p-3 h-40"
+            className="w-full border rounded-lg p-3 h-40 text-gray-900"
             placeholder="Paste your resume here..."
             value={resume}
             onChange={(e) => setResume(e.target.value)}
@@ -58,12 +67,12 @@ export default function Home() {
 
         {/* Job Description */}
         <div className="mb-6">
-          <label className="block font-semibold mb-2">
+          <label className="block font-semibold mb-2 text-gray-800">
             Paste Job Description
           </label>
 
           <textarea
-            className="w-full border rounded-lg p-3 h-40"
+            className="w-full border rounded-lg p-3 h-40 text-gray-900"
             placeholder="Paste job description here..."
             value={jobDesc}
             onChange={(e) => setJobDesc(e.target.value)}
@@ -73,68 +82,73 @@ export default function Home() {
         {/* Button */}
         <button
           onClick={handleAnalyze}
-          className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
         >
           Analyze Resume
         </button>
 
-        {/* Result */}
+        {/* Results */}
         {result && (
-          <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+          <div className="mt-6 p-5 bg-gray-50 rounded-lg text-gray-900">
 
-           <div className="mt-4">
-  <p className="font-semibold mb-2">
-    ATS Match Score: {result?.score}%
-  </p>
+            {/* Score */}
+            <div className="mt-4">
+              <p className="font-semibold mb-2">
+                ATS Match Score: {result?.score}%
+              </p>
 
-  <div className="w-full bg-gray-200 rounded-full h-4">
-    <div
-      className="bg-green-500 h-4 rounded-full"
-      style={{ width: `${result?.score}%` }}
-    ></div>
-  </div>
-</div>
-<div className="mt-4">
-  <p className="font-semibold mb-2">Matched Skills</p>
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div
+                  className="bg-green-500 h-4 rounded-full"
+                  style={{ width: `${result?.score}%` }}
+                ></div>
+              </div>
+            </div>
 
-  <div className="flex flex-wrap gap-2">
-    {result?.matchedSkills?.map((skill: string) => (
-      <span
-        key={skill}
-        className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
-      >
-        {skill}
-      </span>
-    ))}
-  </div>
-</div>
+            {/* Matched Skills */}
+            <div className="mt-4">
+              <p className="font-semibold mb-2">Matched Skills</p>
 
-<div className="mt-4">
-  <p className="font-semibold mb-2">Missing Skills</p>
+              <div className="flex flex-wrap gap-2">
+                {result?.matchedSkills?.map((skill: string) => (
+                  <span
+                    key={skill}
+                    className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-  <div className="flex flex-wrap gap-2">
-    {result?.missingSkills?.map((skill: string) => (
-      <span
-        key={skill}
-        className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm"
-      >
-        {skill}
-      </span>
-    ))}
-  </div>
-</div>
+            {/* Missing Skills */}
+            <div className="mt-4">
+              <p className="font-semibold mb-2">Missing Skills</p>
 
- {result?.suggestions && (
-  <div className="mt-6">
-    <p className="font-semibold mb-2">Suggestions</p>
+              <div className="flex flex-wrap gap-2">
+                {result?.missingSkills?.map((skill: string) => (
+                  <span
+                    key={skill}
+                    className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-    <ul className="list-disc pl-5 space-y-1">
-      {result.suggestions.map((tip: string, index: number) => (
-        <li key={index}>{tip}</li>
-      ))}
-    </ul>
-  </div>
-)}
+            {/* Suggestions */}
+            {result?.suggestions && (
+              <div className="mt-6">
+                <p className="font-semibold mb-2">Suggestions</p>
+
+                <ul className="list-disc pl-5 space-y-1">
+                  {result.suggestions.map((tip: string, index: number) => (
+                    <li key={index}>{tip}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
           </div>
         )}
