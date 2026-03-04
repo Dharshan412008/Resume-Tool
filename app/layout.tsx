@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "TailorCV – AI Resume ATS Optimizer",
   description:
     "TailorCV helps job seekers optimize their resumes for ATS systems. Get instant ATS score, detect missing skills, and improve your resume for better job opportunities.",
+
   keywords: [
     "resume optimizer",
     "ATS resume checker",
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
     "AI resume tool",
     "resume ATS score",
   ],
+
   openGraph: {
     title: "TailorCV – Resume ATS Optimizer",
     description:
@@ -30,6 +32,11 @@ export const metadata: Metadata = {
     url: "https://resume-tool.vercel.app",
     siteName: "TailorCV",
     type: "website",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
