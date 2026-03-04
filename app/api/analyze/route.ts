@@ -1,11 +1,9 @@
-import pdf from "pdf-parse";
-
+const pdf = require("pdf-parse");
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-
     const file = formData.get("resumeFile") as File | null;
     const jobDesc = (formData.get("jobDesc") as string) || "";
 
@@ -13,7 +11,7 @@ export async function POST(req: Request) {
       return Response.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Convert uploaded file to buffer
+    // Convert file to buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -80,6 +78,7 @@ export async function POST(req: Request) {
       matchedSkills,
       missingSkills,
     });
+
   } catch (error) {
     console.error(error);
 
