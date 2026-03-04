@@ -1,64 +1,59 @@
+export const runtime = "nodejs";
+
 export async function POST(req: Request) {
-  const formData = await req.formData();
+  try {
+    const formData = await req.formData();
 
-  const resume = formData.get("resume")?.toString() || "";
-  const jobDesc = formData.get("jobDesc")?.toString() || "";
+    const resume = formData.get("resume")?.toString() || "";
+    const jobDesc = formData.get("jobDesc")?.toString() || "";
 
-  const resumeText = resume.toLowerCase();
-  const jobText = jobDesc.toLowerCase();
+    const resumeText = resume.toLowerCase();
+    const jobText = jobDesc.toLowerCase();
 
-  const commonSkills = [
-    "java",
-    "spring",
-    "spring boot",
-    "mysql",
-    "react",
-    "node",
-    "aws",
-    "docker",
-    "kubernetes",
-    "javascript",
-    "typescript",
-    "python",
-    "html",
-    "css",
-    "mongodb",
-    "rest",
-    "api",
-    "git",
-    "linux",
-  ];
+    const commonSkills = [
+      "java","spring","spring boot","mysql","react","node",
+      "aws","docker","kubernetes","javascript","typescript",
+      "python","html","css","mongodb","rest","api","git","linux"
+    ];
 
-  const words = jobText.split(/[\s,.;()]+/);
-  const extractedSkills: string[] = [];
+    const words = jobText.split(/[\s,.;()]+/);
 
-  words.forEach((word) => {
-    const cleaned = word.toLowerCase();
+    const extractedSkills: string[] = [];
 
-    if (commonSkills.includes(cleaned) && !extractedSkills.includes(cleaned)) {
-      extractedSkills.push(cleaned);
-    }
-  });
+    words.forEach((word) => {
+      const cleaned = word.toLowerCase();
 
-  const matchedSkills: string[] = [];
-  const missingSkills: string[] = [];
+      if (commonSkills.includes(cleaned) && !extractedSkills.includes(cleaned)) {
+        extractedSkills.push(cleaned);
+      }
+    });
 
-  extractedSkills.forEach((skill) => {
-    if (resumeText.includes(skill)) {
-      matchedSkills.push(skill);
-    } else {
-      missingSkills.push(skill);
-    }
-  });
+    const matchedSkills: string[] = [];
+    const missingSkills: string[] = [];
 
-  const total = matchedSkills.length + missingSkills.length;
+    extractedSkills.forEach((skill) => {
+      if (resumeText.includes(skill)) {
+        matchedSkills.push(skill);
+      } else {
+        missingSkills.push(skill);
+      }
+    });
 
-  const score =
-    total === 0 ? 0 : Math.round((matchedSkills.length / total) * 100);
+    const total = matchedSkills.length + missingSkills.length;
 
-  return Response.json({
-    score,
-    matchedSkills,
-    missingSkills,
-  });
+    const score =
+      total === 0 ? 0 : Math.round((matchedSkills.length / total) * 100);
+
+    return Response.json({
+      score,
+      matchedSkills,
+      missingSkills,
+    });
+
+  } catch (error) {
+    return Response.json(
+      { error: "Server error" },
+      { status: 500 }
+    );
+  }
 }
